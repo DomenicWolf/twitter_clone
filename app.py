@@ -177,6 +177,14 @@ def users_followers(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('users/followers.html', user=user)
 
+@app.route('/users/<int:user_id>/likes')
+def show_likes(user_id):
+    """show likes of user"""
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/likes.html', user=user,likes=user.likes)
+
+
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
 def add_follow(follow_id):
@@ -329,8 +337,11 @@ def homepage():
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
+        user = User.query.get(g.user.id)
 
-        return render_template('home.html', messages=messages)
+        liked_ids = [msg.id for msg in g.user.likes]
+
+        return render_template('home.html', messages=messages,likes=liked_ids)
 
     else:
         return render_template('home-anon.html')
